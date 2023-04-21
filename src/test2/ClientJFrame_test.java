@@ -1,4 +1,4 @@
-package UI;
+package test2;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,7 +8,8 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Date;
 
-public class ClientJFrame extends JFrame implements ActionListener {
+public class ClientJFrame_test extends JFrame implements ActionListener {
+    //通过GPT修改 4/17
 
     JTextField ipTextField;
     JTextField portTextField;
@@ -18,7 +19,7 @@ public class ClientJFrame extends JFrame implements ActionListener {
     JButton sendButton;
     Socket socket;
 
-    public ClientJFrame(){
+    public ClientJFrame_test(){
 
         //初始化界面
         initJFrame();
@@ -88,7 +89,9 @@ public class ClientJFrame extends JFrame implements ActionListener {
                 socket = new Socket(ipTextField.getText(),portNum); //定义对象 socket，并指定主机号（host）和端口号 portNum
                 ClientThread ct = new ClientThread(); //定义一个 ClientThread 类的对象 ct
                 ct.start(); //启动一个线程，并调用ClientThread 类中的 run（）方法
-            } catch (Exception ex) {}
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
 
         } else if (obj==sendButton) {
             System.out.println("sendButton Pressed!");      //输出按下信息
@@ -103,7 +106,9 @@ public class ClientJFrame extends JFrame implements ActionListener {
                     out.flush(); //清空缓存区
                 }
                 sendTextField.setText("");
-            } catch (Exception ex) {}
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
 
         }
 

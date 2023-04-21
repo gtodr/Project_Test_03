@@ -1,30 +1,53 @@
-package UI;
+package server_client_communicate;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Date;
 
-public class ServerJFrame extends JFrame implements ActionListener {
+public class Server{
+    public static void main(String[] args) {
+        new ServerJFrame();
+    }
+}
+
+class ServerJFrame extends JFrame implements ActionListener {
 
     JButton startButton;
     JButton sendButton;
     JTextField portTextField;
     JTextArea textArea;
     JTextField sendTextField;
+    ServerSocket serverSocket;
     Socket socket;
 
     public ServerJFrame(){
         //初始化界面
         initJFrame();
 
-        JLabel jl1=new JLabel("Server Configure:");
-
-        this.setVisible(true);
+        //关闭连接和窗口
+        //        this.addWindowListener(new WindowAdapter() {
+//            @Override
+//            public void windowClosing(WindowEvent e) {
+//                try {
+//                    if (socket!=null && !socket.isClosed()){
+//                        socket.close();
+//                    }
+//                    if (serverSocket!=null && !serverSocket.isClosed()){
+//                        serverSocket.close();
+//                    }
+//                }catch (IOException exception){
+//                    System.out.println(exception);
+//                }
+//                dispose();
+//            }
+//        });
 
     }
 
@@ -66,6 +89,7 @@ public class ServerJFrame extends JFrame implements ActionListener {
         contain.add(sayPanel,BorderLayout.SOUTH);		//往容器里添加下面板
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	//设置点击关闭图标，结束窗口所在应用程序
+//        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);	//设置点击关闭图标，结束窗口所在应用程序
 
         setVisible(true);					//设置窗口为可见
         pack();						//自动调整大小以适应其子组件大小与布局
@@ -82,10 +106,10 @@ public class ServerJFrame extends JFrame implements ActionListener {
             startButton.setEnabled(false);
 
             try {
-                ServerSocket s = new ServerSocket(Integer.parseInt(portTextField.getText())); // 创建服务器套接字对象
-                socket = s.accept();
+                serverSocket = new ServerSocket(Integer.parseInt(portTextField.getText())); // 创建服务器套接字对象
+                socket = serverSocket.accept();
                 PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())),true);// 创建打印输出流对象
-                textArea.append("Client connected"+"\n"); //对两个字符串进行拼接
+                textArea.append("Client connected!"+"\n");
                 ServerThread st = new ServerThread();
                 st.start(); //启动线程
 
@@ -100,8 +124,8 @@ public class ServerJFrame extends JFrame implements ActionListener {
             try {PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())),true);// 创建一个打印输出流，形参为从套接字socket 中获取的输出流
                 str= sendTextField.getText();
                 if(!str.isEmpty()){
-                    out.println(new Date()+"\n"+str); //打印输出日期和发送的消息
-                    textArea.append(new Date()+" \n me:"+str+"\n");
+                    out.println(new Date()+"\n"+"server:"+str); //打印输出日期和发送的消息
+                    textArea.append(new Date()+" \n\t\tserver:"+str+"\n");
                     out.flush(); //清空缓存区
                 }
                 sendTextField.setText("");
@@ -117,7 +141,7 @@ public class ServerJFrame extends JFrame implements ActionListener {
             try {
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream())); //创建一个缓冲输出流，其形参为从套接字 socket 中获取的输入流
                 String str;
-                while(true){
+                while(socket!=null){
                     str = in.readLine(); //按行读取
                     textArea.append( str+"\n");
                 }
